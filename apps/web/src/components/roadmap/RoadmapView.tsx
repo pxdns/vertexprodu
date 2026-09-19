@@ -1,5 +1,6 @@
 "use client"
 
+import type { FormEvent } from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -50,7 +51,7 @@ export default function RoadmapView({ workspaceSlug, initialItems }: Props) {
   const milestones = items.filter((i) => i.type === "MILESTONE")
   const features = items.filter((i) => i.type === "FEATURE")
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = async (e: FormEvent) => {
     e.preventDefault()
     if (!newTitle.trim()) return
     setCreating(true)

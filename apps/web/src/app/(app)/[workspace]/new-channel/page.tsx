@@ -1,5 +1,6 @@
 "use client"
 
+import type { FormEvent } from "react"
 import { useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 
@@ -13,7 +14,7 @@ export default function NewChannelPage() {
 
   const slug = params.workspace as string
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
     setLoading(true)

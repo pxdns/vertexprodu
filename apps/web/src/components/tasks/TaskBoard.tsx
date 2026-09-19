@@ -1,5 +1,6 @@
 "use client"
 
+import type { FormEvent, ReactNode } from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -37,7 +38,7 @@ const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: "CANCELLED", label: "Cancelled", color: "text-red-400" },
 ]
 
-const PRIORITY_ICONS: Record<TaskPriority, React.ReactNode> = {
+const PRIORITY_ICONS: Record<TaskPriority, ReactNode> = {
   NO_PRIORITY: <span className="text-white/20">—</span>,
   URGENT: <span className="text-red-400 text-xs font-bold">!</span>,
   HIGH: <span className="text-orange-400">↑</span>,
@@ -55,7 +56,7 @@ export default function TaskBoard({ workspaceSlug, initialTasks, members, curren
   const [newAssignee, setNewAssignee] = useState("")
   const [creating, setCreating] = useState(false)
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = async (e: FormEvent) => {
     e.preventDefault()
     if (!newTitle.trim()) return
     setCreating(true)

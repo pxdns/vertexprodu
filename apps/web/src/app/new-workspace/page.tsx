@@ -1,5 +1,6 @@
 "use client"
 
+import type { FormEvent } from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -9,7 +10,7 @@ export default function NewWorkspacePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
     setLoading(true)

@@ -1,5 +1,6 @@
 "use client"
 
+import type { KeyboardEvent, ReactNode } from "react"
 import { useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 
@@ -35,7 +36,7 @@ export default function MessageInput({ placeholder = "Send a message", onSend }:
     }
   }, [content, sending, onSend, router])
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
@@ -118,7 +119,7 @@ function ToolbarButton({
   onClick,
   title,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   onClick?: () => void
   title?: string
 }) {

@@ -1,5 +1,6 @@
 "use client"
 
+import type { FormEvent } from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -47,7 +48,7 @@ export default function GitHubView({ workspaceSlug, integration }: Props) {
   const [loaded, setLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState<"prs" | "commits">("prs")
 
-  const handleConnect = async (e: React.FormEvent) => {
+  const handleConnect = async (e: FormEvent) => {
     e.preventDefault()
     if (!repoOwner.trim() || !repoName.trim()) return
     setConnecting(true)

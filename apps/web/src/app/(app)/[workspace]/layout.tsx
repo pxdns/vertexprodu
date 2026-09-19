@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
@@ -7,7 +8,7 @@ export default async function WorkspaceLayout({
   children,
   params,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   params: { workspace: string }
 }) {
   const session = await auth()

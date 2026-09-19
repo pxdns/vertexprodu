@@ -8,16 +8,18 @@ export default auth((req) => {
   const publicPaths = ["/signin"]
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
 
+  // Use x-forwarded-host to get the real origin on Vercel,
+  // bypassing NextAuth's AUTH_URL override of req.url/req.nextUrl
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "localhost:3000"
+  const proto = req.headers.get("x-forwarded-proto") ?? "https"
+  const origin = `${proto}://${host}`
+
   if (!isAuthenticated && !isPublic) {
-    const url = req.nextUrl.clone()
-    url.pathname = "/signin"
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(`${origin}/signin`)
   }
 
   if (isAuthenticated && pathname === "/signin") {
-    const url = req.nextUrl.clone()
-    url.pathname = "/"
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(`${origin}/`)
   }
 
   return NextResponse.next()

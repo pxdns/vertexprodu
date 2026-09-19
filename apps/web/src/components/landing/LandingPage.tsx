@@ -1,14 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { type CSSProperties, type ReactNode, useEffect, useState } from "react"
 
 // ── Types ────────────────────────────────────────────────────
 type KanbanCard = { title: string; priority: string | null; tag: string | null; dim?: boolean }
 type KanbanColumn = { label: string; color: string; cards: KanbanCard[] }
+type Platform = { id: string; label: string; sub: string; icon: ReactNode; primary: boolean }
 
 // ── Constants ────────────────────────────────────────────────
-const PLATFORMS = [
+const PLATFORMS: Platform[] = [
   {
     id: "mac",
     label: "Download for Mac",
@@ -105,7 +106,7 @@ const ROADMAP_ITEMS = [
 ]
 
 // ── Styles helpers ────────────────────────────────────────────
-const card: React.CSSProperties = {
+const card: CSSProperties = {
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: 10,
   background: "#0d0d0d",
@@ -543,7 +544,7 @@ function FeatureRow({
   heading: string
   body: string
   bullets: string[]
-  visual: React.ReactNode
+  visual: ReactNode
   reverse: boolean
   id?: string
 }) {
@@ -570,7 +571,7 @@ function FeatureRow({
 }
 
 // ── Feature visual mockups ─────────────────────────────────────
-function MockupShell({ title, children }: { title: string; children: React.ReactNode }) {
+function MockupShell({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div style={card}>
       <div style={{ padding: "9px 12px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.02)" }}>
@@ -705,7 +706,7 @@ function GithubMockup() {
 }
 
 // ── Small components ───────────────────────────────────────────
-function DownloadButton({ platform }: { platform: typeof PLATFORMS[number] }) {
+function DownloadButton({ platform }: { platform: Platform }) {
   return (
     <a
       href="#"

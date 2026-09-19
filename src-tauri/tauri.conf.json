@@ -24,8 +24,12 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["dmg"],
+    "targets": {
+      "macos": ["dmg"],
+      "windows": ["msi"],
+      "linux": ["deb", "appimage"]
+    },
     "identifier": "com.vertex.app",
-    "icon": ["icons/icon.icns"]
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
   }
 }

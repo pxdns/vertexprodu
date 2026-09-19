@@ -9,11 +9,15 @@ export default auth((req) => {
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
 
   if (!isAuthenticated && !isPublic) {
-    return NextResponse.redirect(new URL("/signin", req.url))
+    const url = req.nextUrl.clone()
+    url.pathname = "/signin"
+    return NextResponse.redirect(url)
   }
 
   if (isAuthenticated && pathname === "/signin") {
-    return NextResponse.redirect(new URL("/", req.url))
+    const url = req.nextUrl.clone()
+    url.pathname = "/"
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()

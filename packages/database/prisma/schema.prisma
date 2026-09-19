@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   WorkspaceMember[]
+  messages      Message[]
+  sentDMs       DirectMessage[]   @relation("Sender")
+  receivedDMs   DirectMessage[]   @relation("Recipient")
+  assignedTasks Task[]            @relation("AssignedTasks")
+  createdTasks  Task[]            @relation("CreatedTasks")
+  reactions     MessageReaction[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Workspace ────────────────────────────────────────────────────────────────
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members            WorkspaceMember[]
+  channels           Channel[]
+  tasks              Task[]
+  roadmapItems       RoadmapItem[]
+  githubIntegrations GitHubIntegration[]
+}
+
+model WorkspaceMember {
+  id          String     @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        MemberRole @default(MEMBER)
+  joinedAt    DateTime   @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+// ─── Channels & Messages ──────────────────────────────────────────────────────
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  workspaceId String
+  isPrivate   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  messages  Message[]
+
+  @@unique([workspaceId, name])
+}
+
+model Message {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  channelId String
+  userId    String
+  fileUrls  String[]
+  editedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  channel   Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactions MessageReaction[]
+}
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  messageId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+}
+
+model DirectMessage {
+  id          String    @id @default(cuid())
+  content     String    @db.Text
+  senderId    String
+  recipientId String
+  fileUrls    String[]
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sender    User @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+}
+
+// ─── Tasks ────────────────────────────────────────────────────────────────────
+
+enum TaskStatus {
+  BACKLOG
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  NO_PRIORITY
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(NO_PRIORITY)
+  workspaceId String
+  assigneeId  String?
+  createdById String
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignee  User?     @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  createdBy User      @relation("CreatedTasks", fields: [createdById], references: [id])
+}
+
+// ─── Roadmap ──────────────────────────────────────────────────────────────────
+
+enum RoadmapItemType {
+  MILESTONE
+  FEATURE
+}
+
+enum RoadmapItemStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model RoadmapItem {
+  id          String            @id @default(cuid())
+  title       String
+  description String?           @db.Text
+  type        RoadmapItemType   @default(FEATURE)
+  status      RoadmapItemStatus @default(PLANNED)
+  workspaceId String
+  targetDate  DateTime?
+  progress    Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// ─── GitHub Integration ───────────────────────────────────────────────────────
+
+model GitHubIntegration {
+  id             String   @id @default(cuid())
+  workspaceId    String   @unique
+  repoOwner      String
+  repoName       String
+  installationId String?
+  accessToken    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}

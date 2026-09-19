@@ -1,0 +1,18 @@
+[package]
+name = "vertex"
+version = "0.0.1"
+description = "Vertex desktop app"
+authors = ["Vertex"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = ["macos-private-api"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "0"
+tauri-plugin-shell = { version = "0", features = ["open"] }

@@ -1,0 +1,31 @@
+{
+  "productName": "Vertex",
+  "version": "0.0.1",
+  "identifier": "com.vertex.app",
+  "build": {
+    "beforeBuildCommand": "npm run build --workspace=apps/web",
+    "devPath": "http://localhost:3000",
+    "frontendDist": "../apps/web/.next",
+    "beforeDevCommand": "npm run dev --workspace=apps/web"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Vertex",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg"],
+    "identifier": "com.vertex.app",
+    "icon": ["icons/icon.icns"]
+  }
+}

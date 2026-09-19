@@ -8,8 +8,14 @@
   "scripts": {
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build --workspace=apps/web",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
     "db:push": "npx prisma db push --schema=packages/database/prisma/schema.prisma",
     "db:generate": "npx prisma generate --schema=packages/database/prisma/schema.prisma",
     "db:studio": "npx prisma studio --schema=packages/database/prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "tauri-cli": "^2.0.0"
   }
 }
